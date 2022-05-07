@@ -3,9 +3,9 @@ import codedraw.CodeDraw;
 // This class represents vectors in a 3D vector space.
 public class Vector3 {
 
-    private double x;
-    private double y;
-    private double z;
+    public double x;
+    public double y;
+    public double z;
 
     public Vector3(double x, double y, double z) {
         this.x = x;
@@ -44,7 +44,7 @@ public class Vector3 {
 
     // Returns the length (norm) of this vector.
     public double length() {
-        return this.distanceTo(new Vector3(0, 0, 0));
+        return this.distanceTo(new Vector3());
     }
 
     // Normalizes this vector: changes the length of this vector such that it becomes 1.
@@ -61,7 +61,7 @@ public class Vector3 {
     public void drawAsFilledCircle(CodeDraw cd, double radius) {
         double x = cd.getWidth() * (this.x + Simulation.SECTION_SIZE / 2) / Simulation.SECTION_SIZE;
         double y = cd.getWidth() * (this.y + Simulation.SECTION_SIZE / 2) / Simulation.SECTION_SIZE;
-        radius = cd.getWidth() * radius / (Simulation.SECTION_SIZE / 16);
+        radius = cd.getWidth() * radius / (Simulation.SECTION_SIZE);
         cd.fillCircle(x, y, Math.max(radius, 1.5));
     }
 

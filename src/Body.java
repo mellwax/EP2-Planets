@@ -67,10 +67,10 @@ public class Body {
     // (use a conversion of the real scale to the scale of the canvas as
     // in 'Simulation.java').
     // Hint: call the method 'drawAsFilledCircle' implemented in 'Vector3'.
-//    public void draw(CodeDraw cd) {
-//        cd.setColor(SpaceDraw.massToColor(this.mass));
-//        this.massCenter.drawAsFilledCircle(cd, this.radius());
-//    }
+    public void draw(CodeDraw cd) {
+        cd.setColor(SpaceDraw.massToColor(this.mass));
+        this.massCenter.drawAsFilledCircle(cd, this.radius());
+    }
 
     // Returns a string with the information about this body including
     // mass, position (mass center) and current movement. Example:
