@@ -17,7 +17,7 @@ public class Simulation {
 
     // set some system parameters
     public static final double SECTION_SIZE = 10 * AU; // the size of the square region in space
-    public static final int NUMBER_OF_BODIES = 21;
+    public static final int NUMBER_OF_BODIES = 10;
     public static final double OVERALL_SYSTEM_MASS = 20 * SUN_MASS; // kilograms
     public static final boolean DRAW_OCTANTS = true;
     public static final int MAX_BODIES = 1;
@@ -25,35 +25,22 @@ public class Simulation {
     public static void main(String[] args) {
         CodeDraw cd = new CodeDraw();
         cd.clear(Color.BLACK);
-        Octant octant = new Octant(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY,Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-        Octant octant1 = new Octant(cd.getWidth() / 2.0,0, 0,SECTION_SIZE / 16.0);
+        Octant octant = new Octant(0,0,0,600);
 
         Octree octree = new Octree(octant);
         Random random = new Random(777);
-        for (int i = 0; i < NUMBER_OF_BODIES; i++) {
-            int b = random.nextInt(11);
-            System.out.println(random.nextDouble() * Math.pow(10, b));
-        }
 
         for (int i = 0; i < NUMBER_OF_BODIES; i++) {
-            /*Body b = new Body(Math.abs(random.nextGaussian() * OVERALL_SYSTEM_MASS / NUMBER_OF_BODIES),
-                    new Vector3(random.nextDouble() * Math.pow(10, random.nextInt(11)),
-                            random.nextDouble() * Math.pow(10, random.nextInt(11)),
-                            random.nextDouble() * Math.pow(10, random.nextInt(11))),
-                    new Vector3(random.nextDouble() * Math.pow(10, random.nextInt(11)),
-                            random.nextDouble() * Math.pow(10, random.nextInt(11)),
-                            random.nextDouble() * Math.pow(10, random.nextInt(11))));
-                            */
-
-            Body b = new Body(Math.abs(random.nextGaussian()) * OVERALL_SYSTEM_MASS / NUMBER_OF_BODIES,
-                    new Vector3(0.5 * random.nextGaussian() * AU, 0.5 * random.nextGaussian() * AU, 0.5 * random.nextGaussian() * AU),
-                    new Vector3(0 + random.nextGaussian() * 5e3, 0 + random.nextGaussian() * 5e3, 0 + random.nextGaussian() * 5e3));
+            Body b = new Body(random.nextDouble(600),
+                    new Vector3(random.nextDouble(600),random.nextDouble(600),random.nextDouble(600)),
+                    new Vector3(random.nextDouble(100),random.nextDouble(100),random.nextDouble(100)));
             octree.add(b);
             //b.draw(cd);
             System.out.println(i);
         }
-        System.out.println(octree.toString());
+        System.out.println(octree);
         octree.draw(cd);
+        System.out.println(octree.size());
         cd.show();
     }
 }

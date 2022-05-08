@@ -6,8 +6,8 @@ public class Octree {
 
     private static final int maxBodies = Simulation.MAX_BODIES;
     private final Octant octant;
-    private Body[] bodies = new Body[maxBodies];
-    private Octree[] children = new Octree[8];
+    private final Body[] bodies = new Body[maxBodies];
+    private final Octree[] children = new Octree[8];
     private boolean isDivided;
 
     public Octree(Octant octant) {
@@ -31,7 +31,6 @@ public class Octree {
                     for (int j = 0; j < children.length; j++) {
                         if (bodies[i] != null) {
                             children[i].add(bodies[i]);
-                            bodies[i] = null;
                         }
                     }
                 }
@@ -64,12 +63,21 @@ public class Octree {
         return count;
     }
 
+    public int size() {
+        int counter = bodyCount();
+
+        for (Octree octree : children) {
+            return counter + (octree == null ? 0 : octree.size());
+        }
+        return counter;
+    }
+
     public void draw(CodeDraw cd) {
         if (!isDivided) {
             for (int i = 0; i < bodies.length; i++) {
                 if (bodies[i] != null) {
-                    bodies[i].draw(cd);
                     octant.draw(cd);
+                    bodies[i].draw(cd);
                 }
             }
         }

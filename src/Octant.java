@@ -45,9 +45,9 @@ public class Octant {
         if (Simulation.DRAW_OCTANTS) {
             cd.setColor(Color.WHITE);
             cd.setLineWidth(1);
-            cd.drawSquare(cd.getWidth() * (x - Double.NEGATIVE_INFINITY) / (Double.NEGATIVE_INFINITY - Double.POSITIVE_INFINITY),
-                    cd.getWidth() * y / Simulation.SECTION_SIZE,
-                    cd.getWidth() * length / Simulation.SECTION_SIZE);
+            cd.drawSquare(cd.getWidth() * x / 600,
+                    cd.getWidth() * y / 600,
+                    cd.getWidth() * length / 600);
         }
     }
 
