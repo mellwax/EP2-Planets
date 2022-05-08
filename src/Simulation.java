@@ -17,7 +17,7 @@ public class Simulation {
 
     // set some system parameters
     public static final double SECTION_SIZE = 10 * AU; // the size of the square region in space
-    public static final int NUMBER_OF_BODIES = 10;
+    public static final int NUMBER_OF_BODIES = 100;
     public static final double OVERALL_SYSTEM_MASS = 20 * SUN_MASS; // kilograms
     public static final boolean DRAW_OCTANTS = true;
     public static final int MAX_BODIES = 1;
@@ -25,8 +25,8 @@ public class Simulation {
     public static void main(String[] args) {
         CodeDraw cd = new CodeDraw();
         cd.clear(Color.BLACK);
-        Octant octant = new Octant(0,0,0,600);
 
+        Octant octant = new Octant(0,0,0,600);
         Octree octree = new Octree(octant);
         Random random = new Random(777);
 
@@ -35,12 +35,9 @@ public class Simulation {
                     new Vector3(random.nextDouble(600),random.nextDouble(600),random.nextDouble(600)),
                     new Vector3(random.nextDouble(100),random.nextDouble(100),random.nextDouble(100)));
             octree.add(b);
-            //b.draw(cd);
-            System.out.println(i);
         }
-        System.out.println(octree);
+
         octree.draw(cd);
-        System.out.println(octree.size());
         cd.show();
     }
 }

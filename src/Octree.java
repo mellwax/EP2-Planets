@@ -26,11 +26,11 @@ public class Octree {
             } else {
                 if (!isDivided) {
                     divide();
-                }
-                for (int i = 0; i < bodies.length; i++) {
-                    for (int j = 0; j < children.length; j++) {
-                        if (bodies[i] != null) {
-                            children[i].add(bodies[i]);
+                    for (Body body : bodies) {
+                        for (Octree child : children) {
+                            if (body != null) {
+                                child.add(body);
+                            }
                         }
                     }
                 }
@@ -55,8 +55,8 @@ public class Octree {
 
     private int bodyCount() {
         int count = 0;
-        for (Body body : bodies) {
-            if (body != null) {
+        for (int i = 0; i < bodies.length; i++) {
+            if (bodies[i] != null) {
                 count++;
             }
         }
@@ -64,26 +64,27 @@ public class Octree {
     }
 
     public int size() {
-        int counter = bodyCount();
+        int i = bodyCount();
 
-        for (Octree octree : children) {
-            return counter + (octree == null ? 0 : octree.size());
+        for (int j = 0; j < children.length; j++) {
+            if (children[j] != null) {
+                i += children[j].size();
+            }
         }
-        return counter;
+        return i;
     }
 
     public void draw(CodeDraw cd) {
-        if (!isDivided) {
-            for (int i = 0; i < bodies.length; i++) {
-                if (bodies[i] != null) {
-                    octant.draw(cd);
-                    bodies[i].draw(cd);
+        for (Octree octree : children) {
+            if (octree != null) {
+                octree.draw(cd);
+            } else {
+                for (Body b : bodies) {
+                    if (b != null) {
+                        b.draw(cd);
+                        octant.draw(cd);
+                    }
                 }
-            }
-        }
-        for (Octree child : children) {
-            if (child != null) {
-                child.draw(cd);
             }
         }
     }
@@ -101,7 +102,7 @@ public class Octree {
         s += octant.toString();
         for (int i = 0; i < children.length; i++) {
             if (children[i] != null) {
-                s += children[i].toString();
+                s += i + ": " + children[i].toString();
             }
         }
         return s + "\n";
