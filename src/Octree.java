@@ -1,10 +1,8 @@
 import codedraw.CodeDraw;
 
-import java.util.Arrays;
-
 public class Octree {
 
-    private static final int maxBodies = Simulation.MAX_BODIES;
+    private static final int maxBodies = Simulation.MAX_BODIES_PER_OCTANT;
     private final Octant octant;
     private final Body[] bodies = new Body[maxBodies];
     private final Octree[] children = new Octree[8];
@@ -64,14 +62,7 @@ public class Octree {
     }
 
     public int size() {
-        int i = bodyCount();
-
-        for (int j = 0; j < children.length; j++) {
-            if (children[j] != null) {
-                i += children[j].size();
-            }
-        }
-        return i;
+        return -1;
     }
 
     public void draw(CodeDraw cd) {
@@ -99,12 +90,12 @@ public class Octree {
                 s += "null ";
             }
         }
-        s += octant.toString();
+        s += octant.toString() + "\n";
         for (int i = 0; i < children.length; i++) {
             if (children[i] != null) {
                 s += i + ": " + children[i].toString();
             }
         }
-        return s + "\n";
+        return s;
     }
 }
