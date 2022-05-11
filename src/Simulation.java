@@ -1,4 +1,5 @@
 import codedraw.CodeDraw;
+import codedraw.textformat.TextFormat;
 
 import java.awt.*;
 import java.util.Random;
@@ -17,10 +18,11 @@ public class Simulation {
 
     // set some system parameters
     public static final double SECTION_SIZE = 10 * AU; // the size of the square region in space
-    public static final int NUMBER_OF_BODIES = 100;
+    public static final int NUMBER_OF_BODIES = 5;
     public static final double OVERALL_SYSTEM_MASS = 20 * SUN_MASS; // kilograms
-    public static final boolean DRAW_OCTANTS = false;
+    public static final boolean DRAW_OCTANTS = true;
     public static final int MAX_BODIES_PER_OCTANT = 1;
+    public static final double T = 1;
 
     public static void main(String[] args) {
         CodeDraw cd = new CodeDraw();
@@ -41,11 +43,13 @@ public class Simulation {
         System.out.println(octree.size());
         System.out.println(octree.mass());
         System.out.println(octree.massCenter());
+
+        octree.draw(cd);
         Body test = new Body(octree.mass(), octree.massCenter(), new Vector3());
-        cd.setColor(Color.YELLOW);
+        cd.setColor(Color.RED);
         cd.drawText(octree.massCenter().x,octree.massCenter().y, "Octree Mass Center");
         test.draw(cd);
-        octree.draw(cd);
+
         cd.show();
     }
 }
