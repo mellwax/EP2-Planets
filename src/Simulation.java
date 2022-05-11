@@ -17,7 +17,7 @@ public class Simulation {
 
     // set some system parameters
     public static final double SECTION_SIZE = 10 * AU; // the size of the square region in space
-    public static final int NUMBER_OF_BODIES = 21;
+    public static final int NUMBER_OF_BODIES = 1000;
     public static final double OVERALL_SYSTEM_MASS = 20 * SUN_MASS; // kilograms
     public static final boolean DRAW_OCTANTS = true;
     public static final int MAX_BODIES_PER_OCTANT = 1;
@@ -37,7 +37,7 @@ public class Simulation {
             octree.add(b);
             System.out.println(b);
         }
-        System.out.println(octree);
+        //System.out.println(octree);
         System.out.println(octree.size());
         octree.draw(cd);
         cd.show();

@@ -62,7 +62,28 @@ public class Octree {
     }
 
     public int size() {
-        return -1;
+        return size(this);
+    }
+
+    private int size(Octree tree) {
+        int size = 0;
+        if (tree.hasSubTrees()) {
+            for (Octree octree : tree.children) {
+                size += size(octree);
+            }
+        } else {
+            size = tree.bodyCount();
+        }
+        return size;
+    }
+
+    private boolean hasSubTrees() {
+        for (Octree octree : children) {
+            if (octree == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void draw(CodeDraw cd) {
