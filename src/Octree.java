@@ -53,8 +53,8 @@ public class Octree {
 
     private int bodyCount() {
         int count = 0;
-        for (int i = 0; i < bodies.length; i++) {
-            if (bodies[i] != null) {
+        for (Body body : bodies) {
+            if (body != null) {
                 count++;
             }
         }
@@ -99,6 +99,45 @@ public class Octree {
                 }
             }
         }
+    }
+
+    public double mass() {
+        double mass = 0;
+        if (hasSubTrees()) {
+            for (Octree octree : children) {
+                mass += octree.mass();
+            }
+        } else {
+            for (Body body : bodies) {
+                if (body != null) {
+                    mass += body.mass();
+                }
+            }
+        }
+        return mass;
+    }
+
+    public Vector3 massCenter() {
+        Vector3 result = new Vector3();
+        if (hasSubTrees()) {
+            for (Octree octree : children) {
+                result = result.plus(octree.massCenter().times(octree.mass()));
+            }
+            result = result.times(1 / mass());
+        } else {
+            if (bodyCount() == 0) {
+                result = new Vector3();
+            } else {
+                for (Body body : bodies) {
+                    if (body != null) {
+                        result = result.plus(body.massCenter().times(body.mass()));
+                    }
+                }
+                result = result.times(1 / mass());
+            }
+        }
+
+        return result;
     }
 
     @Override
