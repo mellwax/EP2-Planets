@@ -22,6 +22,9 @@ public class Simulation {
     public static final boolean DRAW_OCTANTS = false;
     public static final int MAX_BODIES_PER_OCTANT = 1;
 
+    // threshold
+    public static final int T = 1;
+
     public static void main(String[] args) {
         CodeDraw cd = new CodeDraw();
         cd.clear(Color.BLACK);
@@ -35,10 +38,10 @@ public class Simulation {
                     new Vector3(random.nextDouble(600), random.nextDouble(600), random.nextDouble(600)),
                     new Vector3(random.nextDouble(100), random.nextDouble(100), random.nextDouble(100)));
             octree.add(b);
-            System.out.println(b);
+            //System.out.println(b);
         }
         //System.out.println(octree);
-        System.out.println(octree.size());
+        /*System.out.println(octree.size());
         System.out.println(octree.mass());
         System.out.println(octree.massCenter());
         Body test = new Body(octree.mass(), octree.massCenter(), new Vector3());
@@ -46,6 +49,32 @@ public class Simulation {
         cd.drawText(octree.massCenter().x,octree.massCenter().y, "Octree Mass Center");
         test.draw(cd);
         octree.draw(cd);
-        cd.show();
+        cd.show();*/
+
+        double seconds = 0;
+
+        // simulation loop
+        while (true) {
+
+            seconds++; // each iteration computes the movement of the celestial bodies within one second.
+            System.out.println(seconds);
+
+            octree.calculateForce(octree);
+            octree.moveBodies();
+
+            // show all movements in the canvas only every hour (to speed up the simulation)
+            if (seconds % (3600) == 0) {
+                // clear old positions (exclude the following line if you want to draw orbits).
+                cd.clear(Color.BLACK);
+                octree.draw(cd);
+                // show new positions
+                cd.show();
+            }
+
+            Octree newOctree = new Octree(octant);
+            newOctree.addAllBodies(octree);
+            octree = newOctree;
+        }
+
     }
 }

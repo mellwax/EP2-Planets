@@ -21,6 +21,8 @@ public class Octree {
                         bodies[i] = b;
                     }
                 }
+                octant.setMass(this.mass());
+                octant.setMassCenter(this.massCenter());
             } else {
                 if (!isDivided) {
                     divide();
@@ -29,11 +31,28 @@ public class Octree {
                             if (body != null) {
                                 child.add(body);
                             }
+                            child.octant.setMass(child.mass());
+                            child.octant.setMassCenter(child.massCenter());
                         }
                     }
                 }
                 for (Octree child : children) {
                     child.add(b);
+                }
+            }
+        }
+    }
+
+    // adds all bodies of tree to this octree
+    public void addAllBodies(Octree tree) {
+        if (tree.hasSubTrees()) {
+            for (Octree octree : tree.children) {
+                octree.addAllBodies(octree);
+            }
+        } else {
+            for (Body body : bodies) {
+                if (body != null) {
+                    this.add(body);
                 }
             }
         }
@@ -138,6 +157,66 @@ public class Octree {
         }
 
         return result;
+    }
+
+    // calculates the gravitational force exerted on every body in this octree
+    public void calculateForce(Octree tree) {
+        if (hasSubTrees()) {
+            for (Octree octree : children) {
+                octree.calculateForce(tree);
+            }
+        } else {
+            for (Body body : bodies) {
+                if (body != null) {
+                    body.setGravitationalForce(tree.gravitationalForce(body));
+                }
+            }
+        }
+    }
+
+    // calculates the gravitational force exerted by this octree on body b
+    public Vector3 gravitationalForce(Body b) {
+
+        if (hasSubTrees()) {
+            for (Octree octree : children) {
+                if (octree.octant.getLength() / (octree.octant.getMassCenter().distanceTo(b.massCenter())) < Simulation.T) {
+                    Vector3 direction = octree.octant.getMassCenter().minus(b.massCenter());
+                    double distance = direction.length();
+                    direction.normalize();
+                    double force = Simulation.G * (octree.octant.getMass() * b.mass()) / (distance * distance);
+                    return direction.times(force);
+                } else {
+                    return octree.gravitationalForce(b);
+                }
+            }
+        } else {
+            for (Body body : bodies) {
+                if (body != null) {
+                    Vector3 direction = body.massCenter().minus(b.massCenter());
+                    double distance = direction.length();
+                    direction.normalize();
+                    double force = Simulation.G * (body.mass() * b.mass()) / (distance * distance);
+                    return direction.times(force);
+                }
+            }
+        }
+        return new Vector3();
+    }
+
+
+    // move all bodies in this octree according to the force exerted on them
+    public void moveBodies() {
+        if (hasSubTrees()) {
+            for (Octree octree : children) {
+                octree.moveBodies();
+            }
+        } else {
+            for (Body body : bodies) {
+                if (body != null) {
+                    body.move(body.getGravitationalForce());
+                }
+            }
+        }
     }
 
     @Override
