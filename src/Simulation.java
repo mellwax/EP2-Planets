@@ -17,7 +17,7 @@ public class Simulation {
 
     // set some system parameters
     public static final double SECTION_SIZE = 10 * AU; // the size of the square region in space
-    public static final int NUMBER_OF_BODIES = 10;
+    public static final int NUMBER_OF_BODIES = 100;
     public static final double OVERALL_SYSTEM_MASS = 20 * SUN_MASS; // kilograms
     public static final boolean DRAW_OCTANTS = false;
     public static final int MAX_BODIES_PER_OCTANT = 1;
@@ -56,7 +56,8 @@ public class Simulation {
         // simulation loop
         while (true) {
 
-            //seconds++; // each iteration computes the movement of the celestial bodies within one second.
+            seconds++; // each iteration computes the movement of the celestial bodies within one second.
+            System.out.println(seconds);
 
             octree.calculateForce(octree);
             octree.moveBodies();
@@ -73,7 +74,6 @@ public class Simulation {
             Octree newOctree = new Octree(octant);
             newOctree.addAllBodies(octree);
             octree = newOctree;
-
         }
 
     }
