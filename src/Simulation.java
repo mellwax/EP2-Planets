@@ -54,7 +54,7 @@ public class Simulation {
         double seconds = 0;
 
         // simulation loop
-        //while (true) {
+        while (true) {
 
             //seconds++; // each iteration computes the movement of the celestial bodies within one second.
 
@@ -62,19 +62,19 @@ public class Simulation {
             octree.moveBodies();
 
             // show all movements in the canvas only every hour (to speed up the simulation)
-            /*if (seconds % (3600) == 0) {
+            if (seconds % (3600) == 0) {
                 // clear old positions (exclude the following line if you want to draw orbits).
                 cd.clear(Color.BLACK);
                 octree.draw(cd);
                 // show new positions
                 cd.show();
-            }*/
+            }
 
             Octree newOctree = new Octree(octant);
             newOctree.addAllBodies(octree);
             octree = newOctree;
 
-        //}
+        }
 
     }
 }

@@ -186,7 +186,7 @@ public class Octree {
                     double force = Simulation.G * (octree.octant.getMass() * b.mass()) / (distance * distance);
                     return direction.times(force);
                 } else {
-                    return octree.gravitationalForce(b);
+                    octree.gravitationalForce(b);
                 }
             }
         } else {
