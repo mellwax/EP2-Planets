@@ -35,6 +35,22 @@ public class Octant {
         return length;
     }
 
+    public Vector3 getMassCenter() {
+        return this.massCenter;
+    }
+
+    public double getMass() {
+        return this.mass;
+    }
+
+    public void setMass(double mass) {
+        this.mass = mass;
+    }
+
+    public void setMassCenter(Vector3 massCenter) {
+        this.massCenter = massCenter;
+    }
+
     public boolean contains(Vector3 massCenter) {
         return massCenter.x >= x && massCenter.x < (x + length) &&
                 massCenter.y >= y && massCenter.y < (y + length) &&

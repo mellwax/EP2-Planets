@@ -6,12 +6,23 @@ public class Body {
     private double mass;
     private Vector3 massCenter; // position of the mass center.
     private Vector3 currentMovement;
+    private Vector3 gravitationalForce;
 
     public Body(double mass, Vector3 massCenter, Vector3 currentMovement) {
         this.mass = mass;
         this.massCenter = massCenter;
         this.currentMovement = currentMovement;
+        this.gravitationalForce = new Vector3();
     }
+
+    public void setGravitationalForce(Vector3 gravitationalForce) {
+        this.gravitationalForce = gravitationalForce;
+    }
+
+    public Vector3 getGravitationalForce() {
+        return this.gravitationalForce;
+    }
+
 
     // Returns the distance between the mass centers of this body and the specified body 'b'.
     public double distanceTo(Body b) {
