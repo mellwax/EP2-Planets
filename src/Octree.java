@@ -13,6 +13,16 @@ public class Octree {
         isDivided = false;
     }
 
+    public void printOctants() {
+        if (hasSubTrees()) {
+            for (Octree child : children) {
+                child.printOctants();
+            }
+        } else {
+            System.out.println(octant.getMass());
+        }
+    }
+
     public void add(Body b) {
         if (octant.contains(b.massCenter())) {
             if (bodyCount() < maxBodies) {
@@ -47,10 +57,10 @@ public class Octree {
     public void addAllBodies(Octree tree) {
         if (tree.hasSubTrees()) {
             for (Octree octree : tree.children) {
-                octree.addAllBodies(octree);
+                this.addAllBodies(octree);
             }
         } else {
-            for (Body body : bodies) {
+            for (Body body : tree.bodies) {
                 if (body != null) {
                     this.add(body);
                 }
