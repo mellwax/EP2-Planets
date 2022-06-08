@@ -74,7 +74,7 @@ public class Simulation {
         }
 
         Body blackHole = new Body(100 * SUN_MASS, new Vector3(), new Vector3());
-        octree.add(blackHole);
+        //octree.add(blackHole);
 
         double seconds = 0;
 

@@ -56,12 +56,12 @@ public class StopWatch {
     }
 
     private void writeHeader() {
-        String[] header = {"counter", "start", "end", "duration in ms"};
+        String[] header = {"counter", "duration in ms"};
         writer.writeNext(header);
     }
 
     private void writeToCSV() {
-        String[] data = {Integer.toString(counter), Long.toString(start), Long.toString(end), Long.toString(duration)};
+        String[] data = {Integer.toString(counter), Long.toString(duration)};
         writer.writeNext(data);
     }
 
