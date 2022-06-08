@@ -2,7 +2,6 @@ import codedraw.CodeDraw;
 
 import java.awt.*;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class Simulation {
 
@@ -79,23 +78,25 @@ public class Simulation {
 
         double seconds = 0;
 
+        StopWatch tree = new StopWatch("Building Tree");
+        StopWatch iteration = new StopWatch("Iteration");
+        StopWatch forces = new StopWatch("Calculating Forces");
+        StopWatch draw = new StopWatch("Drawing");
+
         // simulation loop
         while (true) {
-
-
+            iteration.start();
 
             seconds++; // each iteration computes the movement of the celestial bodies within one second.
 
-            long startTime = System.nanoTime();
+            forces.start();
 
             // calculate gravitational force for every body in octree and move them according to it
             octree.simulate();
 
-            // print duration of each cycle
-            long endTime = System.nanoTime();
-            long duration = endTime - startTime;
-            duration = TimeUnit.MILLISECONDS.convert(duration, TimeUnit.NANOSECONDS);
-            System.out.println("Cycle finished in: " + duration + " ms");
+            forces.stop();
+
+            tree.start();
 
             // update octree
             Octree newOctree = new Octree(octant);
@@ -106,7 +107,9 @@ public class Simulation {
             }
             octree = newOctree;
 
+            tree.stop();
 
+            draw.start();
 
             // show all movements in the canvas
             cd.clear(Color.BLACK);
@@ -114,14 +117,14 @@ public class Simulation {
             // show new positions
             cd.show();
 
+            draw.stop();
+
             // print number of image
             if (seconds % 10 == 0) {
                 System.out.println("Image: " + (int)seconds);
             }
 
-
-
-
+            iteration.stop();
         }
     }
 }
