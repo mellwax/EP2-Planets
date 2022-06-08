@@ -2,9 +2,8 @@ import codedraw.CodeDraw;
 
 public class Octree {
 
-    private static final int maxBodies = Simulation.MAX_BODIES_PER_OCTANT;
     private final Octant octant;
-    private final Body[] bodies = new Body[maxBodies];
+    private Body body;
     private final Octree[] children = new Octree[8];
     private boolean isDivided;
 
@@ -13,38 +12,22 @@ public class Octree {
         isDivided = false;
     }
 
-    public void printOctants() {
-        if (hasSubTrees()) {
-            for (Octree child : children) {
-                child.printOctants();
-            }
-        } else {
-            System.out.println(octant.getMass());
-        }
-    }
-
+    // adds body b to this octree
     public void add(Body b) {
         if (octant.contains(b.massCenter())) {
-            if (bodyCount() < maxBodies) {
-                for (int i = 0; i < bodies.length; i++) {
-                    if (bodies[i] == null) {
-                        bodies[i] = b;
-                    }
-                }
+            if (body == null && !isDivided) {
+                body = b;
                 octant.setMass(this.mass());
                 octant.setMassCenter(this.massCenter());
             } else {
                 if (!isDivided) {
                     divide();
-                    for (Body body : bodies) {
-                        for (Octree child : children) {
-                            if (body != null) {
-                                child.add(body);
-                            }
-                            child.octant.setMass(child.mass());
-                            child.octant.setMassCenter(child.massCenter());
-                        }
+                    for (Octree child : children) {
+                        child.add(body);
+                        child.octant.setMass(child.mass());
+                        child.octant.setMassCenter(child.massCenter());
                     }
+                    body = null;
                 }
                 for (Octree child : children) {
                     child.add(b);
@@ -53,21 +36,72 @@ public class Octree {
         }
     }
 
-    // adds all bodies of tree to this octree
-    public void addAllBodies(Octree tree) {
-        if (tree.hasSubTrees()) {
-            for (Octree octree : tree.children) {
-                this.addAllBodies(octree);
-            }
-        } else {
-            for (Body body : tree.bodies) {
-                if (body != null) {
-                    this.add(body);
+    // adds body b to this octree and merges it if necessary
+    public void addMerge(Body b) {
+        if (octant.contains(b.massCenter())) {
+            if (body == null && !isDivided) {
+                body = b;
+                octant.setMass(this.mass());
+                octant.setMassCenter(this.massCenter());
+            } else {
+                if (!isDivided) {
+                    if (body.distanceTo(b) < (body.radius() + b.radius())) {
+                        body = body.merge(b);
+                        octant.setMass(this.mass());
+                        octant.setMassCenter(this.massCenter());
+                    } else {
+                        divide();
+                        for (Octree child : children) {
+                            child.addMerge(body);
+                            child.octant.setMass(child.mass());
+                            child.octant.setMassCenter(child.massCenter());
+                        }
+                        body = null;
+                    }
+                }
+                if (isDivided) {
+                    for (Octree child : children) {
+                        child.addMerge(b);
+                    }
                 }
             }
         }
     }
 
+    // adds all bodies of tree to this octree and merges them if necessary
+    public void addMergeAllBodies(Octree tree) {
+        if (tree.isDivided) {
+            for (Octree child : tree.children) {
+                this.addMergeAllBodies(child);
+            }
+        } else {
+            if (tree.body != null) {
+                this.addMerge(tree.body);
+            }
+        }
+    }
+
+    // adds all bodies of tree to this octree
+    public void addAllBodies(Octree tree) {
+        if (tree.isDivided) {
+            for (Octree child : tree.children) {
+                this.addAllBodies(child);
+            }
+        } else {
+            if (tree.body != null) {
+                this.add(tree.body);
+            }
+        }
+    }
+
+    // adds all bodies in bodies to this octree
+    public void addFromArray(Body[] bodies) {
+        for (Body body : bodies) {
+            this.add(body);
+        }
+    }
+
+    // parts the octant of this in 8 more
     public void divide() {
         children[0] = new Octree(new Octant(octant.getX(), octant.getY(), octant.getZ(), octant.getLength() / 2));
         children[1] = new Octree(new Octant(octant.getX() + octant.getLength() / 2, octant.getY(), octant.getZ(), octant.getLength() / 2));
@@ -80,106 +114,61 @@ public class Octree {
         isDivided = true;
     }
 
-    private int bodyCount() {
-        int count = 0;
-        for (Body body : bodies) {
-            if (body != null) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public int size() {
-        return size(this);
-    }
-
-    private int size(Octree tree) {
-        int size = 0;
-        if (tree.hasSubTrees()) {
-            for (Octree octree : tree.children) {
-                size += size(octree);
+    // draws all bodies of this octree
+    public void draw(CodeDraw cd) {
+        if (isDivided) {
+            for (Octree child : children) {
+                child.draw(cd);
             }
         } else {
-            size = tree.bodyCount();
-        }
-        return size;
-    }
-
-    private boolean hasSubTrees() {
-        for (Octree octree : children) {
-            if (octree == null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void draw(CodeDraw cd) {
-        for (Octree octree : children) {
-            if (octree != null) {
-                octree.draw(cd);
-            } else {
-                for (Body b : bodies) {
-                    if (b != null) {
-                        b.draw(cd);
-                        octant.draw(cd);
-                    }
-                }
+            if (body != null) {
+                body.draw(cd);
+                octant.draw(cd);
             }
         }
     }
 
+    // returns the overall mass of this octree
     public double mass() {
         double mass = 0;
-        if (hasSubTrees()) {
-            for (Octree octree : children) {
-                mass += octree.mass();
+        if (isDivided) {
+            for (Octree child : children) {
+                mass += child.mass();
             }
         } else {
-            for (Body body : bodies) {
-                if (body != null) {
-                    mass += body.mass();
-                }
+            if (body != null) {
+                mass += body.mass();
             }
         }
         return mass;
     }
 
+    // returns the mass center of this octree
     public Vector3 massCenter() {
         Vector3 result = new Vector3();
-        if (hasSubTrees()) {
-            for (Octree octree : children) {
-                result = result.plus(octree.massCenter().times(octree.mass()));
+        if (isDivided) {
+            for (Octree child : children) {
+                result = result.plus(child.massCenter().times(child.mass()));
             }
             result = result.times(1 / mass());
         } else {
-            if (bodyCount() == 0) {
-                result = new Vector3();
-            } else {
-                for (Body body : bodies) {
-                    if (body != null) {
-                        result = result.plus(body.massCenter().times(body.mass()));
-                    }
-                }
+            if (body != null) {
+                result = result.plus(body.massCenter().times(body.mass()));
                 result = result.times(1 / mass());
             }
         }
-
         return result;
     }
 
     // calculates the gravitational force exerted on every body in this octree
     public void calculateForce(Octree tree) {
-        if (hasSubTrees()) {
-            for (Octree octree : children) {
-                octree.calculateForce(tree);
+        if (isDivided) {
+            for (Octree child : children) {
+                child.calculateForce(tree);
             }
         } else {
-            for (Body body : bodies) {
-                if (body != null) {
-                    body.setGravitationalForce(tree.gravitationalForce(body));
-                }
+            if (body != null) {
+                body.setGravitationalForce(tree.gravitationalForce(body));
             }
         }
     }
@@ -187,27 +176,23 @@ public class Octree {
     // calculates the gravitational force exerted by this octree on body b
     public Vector3 gravitationalForce(Body b) {
 
-        if (hasSubTrees()) {
-            for (Octree octree : children) {
-                if (octree.octant.getLength() / (octree.octant.getMassCenter().distanceTo(b.massCenter())) < Simulation.T) {
-                    Vector3 direction = octree.octant.getMassCenter().minus(b.massCenter());
+        if (isDivided) {
+            Vector3 forceSum = new Vector3();
+            for (Octree child : children) {
+                if (child.octant.getLength() / (b.massCenter().distanceTo(child.octant.getMassCenter())) < Simulation.T) {
+                    Vector3 direction = child.octant.getMassCenter().minus(b.massCenter());
                     double distance = direction.length();
                     direction.normalize();
-                    double force = Simulation.G * (octree.octant.getMass() * b.mass()) / (distance * distance);
-                    return direction.times(force);
+                    double force = Simulation.G * (child.octant.getMass() * b.mass()) / (distance * distance);
+                    forceSum = forceSum.plus(direction.times(force));
                 } else {
-                    return octree.gravitationalForce(b);
+                    forceSum = forceSum.plus(child.gravitationalForce(b));
                 }
             }
+            return forceSum;
         } else {
-            for (Body body : bodies) {
-                if (body != null) {
-                    Vector3 direction = body.massCenter().minus(b.massCenter());
-                    double distance = direction.length();
-                    direction.normalize();
-                    double force = Simulation.G * (body.mass() * b.mass()) / (distance * distance);
-                    return direction.times(force);
-                }
+            if (body != null && !body.equals(b)) {
+                b.gravitationalForce(body);
             }
         }
         return new Vector3();
@@ -216,28 +201,57 @@ public class Octree {
 
     // move all bodies in this octree according to the force exerted on them
     public void moveBodies() {
-        if (hasSubTrees()) {
-            for (Octree octree : children) {
-                octree.moveBodies();
+        if (isDivided) {
+            for (Octree child : children) {
+                child.moveBodies();
             }
         } else {
-            for (Body body : bodies) {
-                if (body != null) {
-                    body.move(body.getGravitationalForce());
-                }
+            if (body != null) {
+                body.move(body.getGravitationalForce());
             }
         }
+    }
+
+    public void simulate() {
+        resetForces();
+        calculateForce(this);
+        moveBodies();
+    }
+
+    public void resetForces() {
+        if (isDivided) {
+            for (Octree child : children) {
+                child.resetForces();
+            }
+        } else {
+            if (body != null) {
+                body.setGravitationalForce(new Vector3());
+            }
+        }
+    }
+
+    // returns the number of bodies this octree contains
+    public int size(Octree tree) {
+        int size = 0;
+        if (tree.isDivided) {
+            for (Octree child : tree.children) {
+                size += size(child);
+            }
+        } else {
+            if (tree.body != null) {
+                size = 1;
+            }
+        }
+        return size;
     }
 
     @Override
     public String toString() {
         String s = "Bodies: ";
-        for (int i = 0; i < bodies.length; i++) {
-            if (bodies[i] != null) {
-                s += bodies[i].toString() + " ";
-            } else {
-                s += "null ";
-            }
+        if (body != null) {
+            s += body + " ";
+        } else {
+            s += "null ";
         }
         s += octant.toString() + "\n";
         for (int i = 0; i < children.length; i++) {

@@ -59,11 +59,11 @@ public class Octant {
 
     public void draw(CodeDraw cd) {
         if (Simulation.DRAW_OCTANTS) {
-            cd.setColor(Color.WHITE);
-            cd.setLineWidth(1);
-            cd.drawSquare(cd.getWidth() * x / Simulation.SECTION_SIZE,
-                    cd.getWidth() * y / Simulation.SECTION_SIZE,
-                    cd.getWidth() * length / Simulation.SECTION_SIZE);
+            SpaceDraw.massToColor(mass);
+            cd.setLineWidth(0.1);
+            cd.drawSquare(cd.getWidth() * (x + Simulation.SECTION_SIZE / 2) / Simulation.SECTION_SIZE,
+                    cd.getWidth() * (y + Simulation.SECTION_SIZE / 2) / Simulation.SECTION_SIZE,
+                    cd.getWidth() * length / (Simulation.SECTION_SIZE / 2));
         }
     }
 

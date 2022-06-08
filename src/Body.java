@@ -3,10 +3,10 @@ import codedraw.CodeDraw;
 // This class represents celestial bodies like stars, planets, asteroids, etc..
 public class Body {
 
-    private double mass;
+    private final double mass;
     private Vector3 massCenter; // position of the mass center.
     private Vector3 currentMovement;
-    private Vector3 gravitationalForce;
+    private Vector3 gravitationalForce; // force exerted on this body
 
     public Body(double mass, Vector3 massCenter, Vector3 currentMovement) {
         this.mass = mass;
@@ -23,24 +23,8 @@ public class Body {
         return this.gravitationalForce;
     }
 
-
-    // Returns the distance between the mass centers of this body and the specified body 'b'.
     public double distanceTo(Body b) {
         return this.massCenter.distanceTo(b.massCenter);
-    }
-
-    // Returns a vector representing the gravitational force exerted by 'b' on this body.
-    // The gravitational Force F is calculated by F = G*(m1*m2)/(r*r), with m1 and m2 being the
-    // masses of the objects interacting, r being the distance between the centers of the masses
-    // and G being the gravitational constant.
-    // Hint: see simulation loop in Simulation.java to find out how this is done.
-    public Vector3 gravitationalForce(Body b) {
-
-        Vector3 direction = b.massCenter.minus(this.massCenter);
-        double distance = direction.length();
-        direction.normalize();
-        double force = Simulation.G * this.mass * b.mass / (distance * distance);
-        return direction.times(force);
     }
 
     // Moves this body to a new position, according to the specified force vector 'force' exerted
@@ -66,11 +50,24 @@ public class Body {
     // Returns a new body that is formed by the collision of this body and 'b'. The impulse
     // of the returned body is the sum of the impulses of 'this' and 'b'.
     public Body merge(Body b) {
-        Body result = new Body(this.mass + b.mass,
+
+        return new Body(this.mass + b.mass,
                 this.massCenter.times(this.mass).plus(b.massCenter.times(b.mass)).times(1 / (this.mass + b.mass)),
                 this.currentMovement.times(this.mass).plus(b.currentMovement.times(b.mass)).times(1 / (this.mass + b.mass)));
+    }
 
-        return result;
+    // Returns a vector representing the gravitational force exerted by 'b' on this body.
+    // The gravitational Force F is calculated by F = G*(m1*m2)/(r*r), with m1 and m2 being the
+    // masses of the objects interacting, r being the distance between the centers of the masses
+    // and G being the gravitational constant.
+    public void gravitationalForce(Body b) {
+
+        Vector3 direction = b.massCenter.minus(this.massCenter);
+        double distance = direction.length();
+        direction.normalize();
+        double force = Simulation.G * (this.mass * b.mass) / (distance * distance);
+        direction.times(force);
+
     }
 
     // Draws the body to the specified canvas as a filled circle.
@@ -87,7 +84,7 @@ public class Body {
     // mass, position (mass center) and current movement. Example:
     // "5.972E24 kg, position: [1.48E11,0.0,0.0] m, movement: [0.0,29290.0,0.0] m/s."
     public String toString() {
-        return this.mass + " kg, position: " + this.massCenter.toString() + " m, movement: " + this.currentMovement.toString() + " m/s";
+        return "mass: " + this.mass + " kg, position: " + this.massCenter.toString() + " m, movement: " + this.currentMovement.toString() + " m/s";
     }
 
     // returns the mass of this body
