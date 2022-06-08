@@ -43,12 +43,11 @@ public class StopWatch {
     }
 
     private void setup() {
-        file = new File("./csv/" + name.trim() + ".csv");
+        file = new File("./csv/" + name.replace(" ", "") + ".csv");
 
         try {
             output = new FileWriter(file);
             writer = new CSVWriter(output,';', CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,6 +62,14 @@ public class StopWatch {
     private void writeToCSV() {
         String[] data = {Integer.toString(counter), Long.toString(duration)};
         writer.writeNext(data);
+    }
+
+    public void close() {
+        try {
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void print() {
